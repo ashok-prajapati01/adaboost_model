@@ -21,35 +21,38 @@ HTML_TEMPLATE = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber-Tech Intelligence Portal | AdaBoost AI</title>
-    <!-- Google Fonts, FontAwesome & Chart.js -->
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Customizable AI Intelligence Portal</title>
+    
+    <!-- Dynamic Google Fonts -->
+    <link id="font-stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <style>
+    <style id="custom-styles">
         :root {
             --bg-dark: #05050d;
             --card-bg: rgba(13, 12, 29, 0.82);
             --card-border: rgba(186, 85, 211, 0.25);
-            --neon-pink: #ff007f;
-            --neon-purple: #a855f7;
-            --neon-cyan: #00f0ff;
-            --neon-emerald: #10b981;
+            --accent-primary: #ff007f;
+            --accent-secondary: #a855f7;
+            --accent-cyan: #00f0ff;
+            --accent-emerald: #10b981;
             --text-main: #f3f4f6;
             --text-muted: #a1a1aa;
             --input-bg: rgba(255, 255, 255, 0.04);
             --input-border: rgba(168, 85, 247, 0.3);
+            --font-family: 'Space Grotesk', sans-serif;
+            --blur-intensity: 25px;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Space Grotesk', sans-serif;
+            font-family: var(--font-family);
+            transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
         }
 
-        /* Animated Synthwave Gradient Background */
         body {
             min-height: 100vh;
             display: flex;
@@ -58,19 +61,11 @@ HTML_TEMPLATE = """
             overflow-x: hidden;
             position: relative;
             padding: 40px 20px;
-            background: linear-gradient(-45deg, #05050d, #1a0b2e, #2b0938, #031329, #05050d);
-            background-size: 400% 400%;
-            animation: cyberGradient 12s ease infinite;
+            background: var(--bg-dark);
             color: var(--text-main);
         }
 
-        @keyframes cyberGradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Particle Overlay */
+        /* Canvas Overlay for Particle / Matrix Effects */
         #bg-canvas {
             position: fixed;
             top: 0;
@@ -87,39 +82,62 @@ HTML_TEMPLATE = """
             width: 100%;
             max-width: 1100px;
             background: var(--card-bg);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+            backdrop-filter: blur(var(--blur-intensity));
+            -webkit-backdrop-filter: blur(var(--blur-intensity));
             border: 1px solid var(--card-border);
             border-radius: 24px;
-            padding: 45px;
-            box-shadow: 0 0 50px rgba(168, 85, 247, 0.15),
-                        0 20px 40px rgba(0, 0, 0, 0.8);
+            padding: 40px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Style Customizer Toolbar Panel */
+        .style-toolbar {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            align-items: center;
+        }
+
+        .toolbar-title {
+            grid-column: 1 / -1;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 35px;
+            margin-bottom: 30px;
         }
 
         .header .badge {
             display: inline-block;
             padding: 6px 18px;
-            background: rgba(255, 0, 127, 0.12);
-            border: 1px solid rgba(255, 0, 127, 0.4);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
             border-radius: 30px;
-            color: var(--neon-pink);
+            color: var(--accent-cyan);
             font-size: 0.8rem;
             font-weight: 700;
             letter-spacing: 2px;
             text-transform: uppercase;
             margin-bottom: 12px;
-            box-shadow: 0 0 15px rgba(255, 0, 127, 0.2);
         }
 
         .header h1 {
-            font-size: 2.3rem;
+            font-size: 2.2rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #ffffff 0%, var(--neon-cyan) 50%, var(--neon-purple) 100%);
+            background: linear-gradient(135deg, var(--text-main) 0%, var(--accent-cyan) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
@@ -132,8 +150,8 @@ HTML_TEMPLATE = """
 
         .grid-form {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 18px;
         }
 
         .form-group {
@@ -152,7 +170,7 @@ HTML_TEMPLATE = """
         }
 
         .form-group label i {
-            color: var(--neon-cyan);
+            color: var(--accent-cyan);
         }
 
         .form-control {
@@ -163,13 +181,11 @@ HTML_TEMPLATE = """
             color: var(--text-main);
             font-size: 0.95rem;
             outline: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .form-control:focus {
-            border-color: var(--neon-cyan);
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 15px var(--accent-cyan);
         }
 
         select.form-control option {
@@ -180,7 +196,7 @@ HTML_TEMPLATE = """
         .submit-btn {
             grid-column: 1 / -1;
             margin-top: 15px;
-            background: linear-gradient(135deg, var(--neon-pink) 0%, var(--neon-purple) 50%, var(--neon-cyan) 100%);
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
             color: white;
             border: none;
             border-radius: 12px;
@@ -189,24 +205,16 @@ HTML_TEMPLATE = """
             font-weight: 700;
             letter-spacing: 1px;
             cursor: pointer;
-            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
-            box-shadow: 0 10px 30px -5px rgba(255, 0, 127, 0.5);
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 10px 25px -5px var(--accent-primary);
         }
 
         .submit-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 15px 35px -5px rgba(0, 240, 255, 0.6);
             filter: brightness(1.15);
-        }
-
-        .submit-btn:active {
-            transform: translateY(0);
         }
 
         /* Analytics Output Card */
@@ -217,7 +225,7 @@ HTML_TEMPLATE = """
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--card-border);
             display: none;
-            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: slideUp 0.5s ease forwards;
         }
 
         .result-header {
@@ -241,31 +249,18 @@ HTML_TEMPLATE = """
             border-radius: 14px;
             background: rgba(0, 0, 0, 0.4);
             border: 1px solid var(--card-border);
-            transition: all 0.5s ease;
         }
 
         .result-positive {
-            color: var(--neon-emerald);
-            border-color: rgba(16, 185, 129, 0.5);
-            box-shadow: 0 0 25px rgba(16, 185, 129, 0.3);
-            animation: pulseEmerald 2s infinite;
+            color: var(--accent-emerald);
+            border-color: var(--accent-emerald);
+            box-shadow: 0 0 25px var(--accent-emerald);
         }
 
         .result-negative {
-            color: var(--neon-pink);
-            border-color: rgba(255, 0, 127, 0.5);
-            box-shadow: 0 0 25px rgba(255, 0, 127, 0.3);
-            animation: pulseMagenta 2s infinite;
-        }
-
-        @keyframes pulseEmerald {
-            0%, 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); }
-            50% { box-shadow: 0 0 35px rgba(16, 185, 129, 0.6); }
-        }
-
-        @keyframes pulseMagenta {
-            0%, 100% { box-shadow: 0 0 20px rgba(255, 0, 127, 0.3); }
-            50% { box-shadow: 0 0 35px rgba(255, 0, 127, 0.6); }
+            color: var(--accent-primary);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 25px var(--accent-primary);
         }
 
         .analytics-grid {
@@ -287,12 +282,9 @@ HTML_TEMPLATE = """
             width: 100%;
             height: 300px;
             padding: 15px;
-            background: rgba(5, 5, 13, 0.6);
+            background: rgba(0, 0, 0, 0.3);
             border-radius: 16px;
-            border: 1px solid rgba(168, 85, 247, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border: 1px solid var(--card-border);
         }
 
         .metrics-panel {
@@ -303,7 +295,7 @@ HTML_TEMPLATE = """
 
         .metric-item {
             background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--card-border);
             border-radius: 12px;
             padding: 16px;
         }
@@ -313,7 +305,6 @@ HTML_TEMPLATE = """
             color: var(--text-muted);
             margin-bottom: 8px;
             text-transform: uppercase;
-            letter-spacing: 1px;
             display: flex;
             justify-content: space-between;
         }
@@ -324,24 +315,18 @@ HTML_TEMPLATE = """
             background: rgba(255, 255, 255, 0.08);
             border-radius: 5px;
             overflow: hidden;
-            position: relative;
         }
 
         .metric-bar-fill {
             height: 100%;
             width: 0%;
             border-radius: 5px;
-            transition: width 1.2s cubic-bezier(0.1, 1, 0.1, 1);
+            transition: width 1s ease;
         }
 
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (max-width: 600px) {
-            .container { padding: 25px 20px; }
-            .header h1 { font-size: 1.6rem; }
         }
     </style>
 </head>
@@ -350,10 +335,59 @@ HTML_TEMPLATE = """
     <canvas id="bg-canvas"></canvas>
 
     <div class="container">
+        
+        <!-- Live Style & Color Customizer Dropdown Bar -->
+        <div class="style-toolbar">
+            <div class="toolbar-title">
+                <i class="fa-solid fa-palette"></i> Dynamic Theme Customizer
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-droplet"></i> Color Palette</label>
+                <select id="themeSelector" class="form-control" onchange="applyTheme(this.value)">
+                    <option value="cyber">Cyber Synthwave (Neon Purple/Pink)</option>
+                    <option value="darkGlass">Executive Glass (Deep Navy/Cyan)</option>
+                    <option value="emerald">Emerald Matrix (Dark Green/Mint)</option>
+                    <option value="sunset">Sunset Crimson (Obsidian/Orange)</option>
+                    <option value="gold">Royal Gold (Dark Ebony/Gold)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-wand-magic-sparkles"></i> Background Style</label>
+                <select id="bgSelector" class="form-control" onchange="applyBackground(this.value)">
+                    <option value="particles">Particle Constellation</option>
+                    <option value="matrix">Digital Rain (Matrix)</option>
+                    <option value="gradient">Glowing Gradient Wave</option>
+                    <option value="flat">Static Glassmorphism</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-layer-group"></i> Glassmorphism Blur</label>
+                <select id="blurSelector" class="form-control" onchange="applyBlur(this.value)">
+                    <option value="25px">Heavy Blur (25px)</option>
+                    <option value="12px">Medium Blur (12px)</option>
+                    <option value="5px">Light Glass (5px)</option>
+                    <option value="0px">Flat Solid (0px)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-font"></i> Font Family</label>
+                <select id="fontSelector" class="form-control" onchange="applyFont(this.value)">
+                    <option value="Space Grotesk">Space Grotesk (Tech)</option>
+                    <option value="Plus Jakarta Sans">Plus Jakarta Sans (Corporate)</option>
+                    <option value="Inter">Inter (Clean)</option>
+                    <option value="Roboto Mono">Roboto Mono (Monospace)</option>
+                </select>
+            </div>
+        </div>
+
         <div class="header">
-            <span class="badge"><i class="fa-solid fa-atom"></i> Cyber-Tech Intelligence</span>
-            <h1>AdaBoost Predictive Dashboard</h1>
-            <p>Input target metrics to evaluate predictive customer intelligence models</p>
+            <span class="badge"><i class="fa-solid fa-microchip"></i> Machine Learning Engine</span>
+            <h1>AdaBoost Prediction Portal</h1>
+            <p>Select your favorite UI style above and execute real-time model analytics</p>
         </div>
 
         <form id="prediction-form" class="grid-form">
@@ -419,7 +453,7 @@ HTML_TEMPLATE = """
             </div>
 
             <button type="submit" class="submit-btn">
-                <i class="fa-solid fa-bolt-lightning"></i> Run Model Analytics
+                <i class="fa-solid fa-play"></i> Execute Prediction Analytics
             </button>
         </form>
 
@@ -430,12 +464,10 @@ HTML_TEMPLATE = """
             </div>
 
             <div class="analytics-grid">
-                <!-- Interactive Radar Chart -->
                 <div class="chart-box">
                     <canvas id="radarChart"></canvas>
                 </div>
 
-                <!-- Animated Meters Panel -->
                 <div class="metrics-panel">
                     <div class="metric-item">
                         <div class="metric-label">
@@ -443,27 +475,27 @@ HTML_TEMPLATE = """
                             <span id="riskPctText">0%</span>
                         </div>
                         <div class="metric-bar-bg">
-                            <div id="riskBar" class="metric-bar-fill" style="background: linear-gradient(90deg, #10b981, #ff007f);"></div>
+                            <div id="riskBar" class="metric-bar-fill" style="background: var(--accent-primary);"></div>
                         </div>
                     </div>
 
                     <div class="metric-item">
                         <div class="metric-label">
-                            <span>Platform Activity Level</span>
+                            <span>Platform Usage Index</span>
                             <span id="usagePctText">0%</span>
                         </div>
                         <div class="metric-bar-bg">
-                            <div id="engagementBar" class="metric-bar-fill" style="background: linear-gradient(90deg, #a855f7, #00f0ff);"></div>
+                            <div id="engagementBar" class="metric-bar-fill" style="background: var(--accent-cyan);"></div>
                         </div>
                     </div>
 
                     <div class="metric-item">
                         <div class="metric-label">
-                            <span>Value Metric</span>
+                            <span>Customer Value Metric</span>
                             <span id="spendPctText">0%</span>
                         </div>
                         <div class="metric-bar-bg">
-                            <div id="spendBar" class="metric-bar-fill" style="background: linear-gradient(90deg, #ff007f, #00f0ff);"></div>
+                            <div id="spendBar" class="metric-bar-fill" style="background: var(--accent-secondary);"></div>
                         </div>
                     </div>
                 </div>
@@ -472,11 +504,81 @@ HTML_TEMPLATE = """
     </div>
 
     <script>
-        // Particle Network Acceleration Effect
+        // Color Theme Presets Config
+        const themePresets = {
+            cyber: {
+                bgDark: '#05050d',
+                cardBg: 'rgba(13, 12, 29, 0.82)',
+                cardBorder: 'rgba(186, 85, 211, 0.25)',
+                primary: '#ff007f',
+                secondary: '#a855f7',
+                cyan: '#00f0ff',
+                emerald: '#10b981'
+            },
+            darkGlass: {
+                bgDark: '#0a0e17',
+                cardBg: 'rgba(16, 24, 40, 0.80)',
+                cardBorder: 'rgba(0, 242, 254, 0.25)',
+                primary: '#f43f5e',
+                secondary: '#7f00ff',
+                cyan: '#00f2fe',
+                emerald: '#10b981'
+            },
+            emerald: {
+                bgDark: '#021810',
+                cardBg: 'rgba(6, 38, 25, 0.82)',
+                cardBorder: 'rgba(16, 185, 129, 0.3)',
+                primary: '#f43f5e',
+                secondary: '#059669',
+                cyan: '#34d399',
+                emerald: '#10b981'
+            },
+            sunset: {
+                bgDark: '#1a0c0c',
+                cardBg: 'rgba(38, 16, 16, 0.82)',
+                cardBorder: 'rgba(249, 115, 22, 0.3)',
+                primary: '#ef4444',
+                secondary: '#f97316',
+                cyan: '#facc15',
+                emerald: '#10b981'
+            },
+            gold: {
+                bgDark: '#12100b',
+                cardBg: 'rgba(31, 26, 16, 0.82)',
+                cardBorder: 'rgba(234, 179, 8, 0.3)',
+                primary: '#e11d48',
+                secondary: '#eab308',
+                cyan: '#fef08a',
+                emerald: '#10b981'
+            }
+        };
+
+        function applyTheme(themeKey) {
+            const t = themePresets[themeKey];
+            const root = document.documentElement;
+            root.style.setProperty('--bg-dark', t.bgDark);
+            root.style.setProperty('--card-bg', t.cardBg);
+            root.style.setProperty('--card-border', t.cardBorder);
+            root.style.setProperty('--accent-primary', t.primary);
+            root.style.setProperty('--accent-secondary', t.secondary);
+            root.style.setProperty('--accent-cyan', t.cyan);
+            root.style.setProperty('--accent-emerald', t.emerald);
+        }
+
+        function applyBlur(blurVal) {
+            document.documentElement.style.setProperty('--blur-intensity', blurVal);
+        }
+
+        function applyFont(fontName) {
+            document.documentElement.style.setProperty('--font-family', `'${fontName}', sans-serif`);
+        }
+
+        // Canvas Background Renderers (Particles, Matrix, Gradient)
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
-        let speedMultiplier = 1;
-        
+        let activeBgMode = 'particles';
+        let animationFrameId = null;
+
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -484,72 +586,82 @@ HTML_TEMPLATE = """
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        const particles = [];
-        const particleCount = 50;
+        // Particles Mode
+        const particles = Array.from({ length: 45 }, () => ({
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            size: Math.random() * 2 + 1,
+            speedX: (Math.random() - 0.5) * 0.8,
+            speedY: (Math.random() - 0.5) * 0.8
+        }));
 
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2.5 + 1;
-                this.baseSpeedX = (Math.random() - 0.5) * 0.7;
-                this.baseSpeedY = (Math.random() - 0.5) * 0.7;
-                this.color = Math.random() > 0.5 ? '#ff007f' : '#00f0ff';
-                this.opacity = Math.random() * 0.6 + 0.2;
-            }
-
-            update() {
-                this.x += this.baseSpeedX * speedMultiplier;
-                this.y += this.baseSpeedY * speedMultiplier;
-
-                if (this.x < 0 || this.x > canvas.width) this.baseSpeedX *= -1;
-                if (this.y < 0 || this.y > canvas.height) this.baseSpeedY *= -1;
-            }
-
-            draw() {
-                ctx.fillStyle = this.color;
-                ctx.globalAlpha = this.opacity;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle());
-        }
-
-        function animate() {
+        function drawParticles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].update();
-                particles[i].draw();
+            particles.forEach(p => {
+                p.x += p.speedX;
+                p.y += p.speedY;
+                if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
 
-                for (let j = i + 1; j < particles.length; j++) {
-                    const dx = particles[i].x - particles[j].x;
-                    const dy = particles[i].y - particles[j].y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-
-                    if (distance < 110) {
-                        ctx.beginPath();
-                        ctx.strokeStyle = `rgba(168, 85, 247, ${0.15 - distance / 900})`;
-                        ctx.lineWidth = 0.7;
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.stroke();
-                    }
-                }
-            }
-            requestAnimationFrame(animate);
+                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent-cyan').trim() || '#00f0ff';
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            animationFrameId = requestAnimationFrame(drawParticles);
         }
-        animate();
+
+        // Matrix Mode
+        const matrixChars = '011010101001MLAI';
+        const fontSize = 14;
+        let columns = Math.floor(window.innerWidth / fontSize);
+        let drops = Array(columns).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(5, 5, 13, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent-cyan').trim() || '#00f0ff';
+            ctx.font = fontSize + 'px monospace';
+
+            drops.forEach((y, i) => {
+                const text = matrixChars.charAt(Math.floor(Math.random() * matrixChars.length));
+                ctx.fillText(text, i * fontSize, y * fontSize);
+                if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            });
+            animationFrameId = requestAnimationFrame(drawMatrix);
+        }
+
+        function applyBackground(mode) {
+            cancelAnimationFrame(animationFrameId);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            document.body.style.animation = 'none';
+
+            if (mode === 'particles') {
+                drawParticles();
+            } else if (mode === 'matrix') {
+                columns = Math.floor(window.innerWidth / fontSize);
+                drops = Array(columns).fill(1);
+                drawMatrix();
+            } else if (mode === 'gradient') {
+                document.body.style.background = 'linear-gradient(-45deg, #05050d, #1a0b2e, #2b0938, #031329)';
+                document.body.style.backgroundSize = '400% 400%';
+                document.body.style.animation = 'gradientWave 10s ease infinite';
+            } else {
+                document.body.style.background = 'var(--bg-dark)';
+            }
+        }
+
+        // Initial launch
+        drawParticles();
 
         // Chart.js Radar Instance
         let radarChartInstance = null;
 
         function renderRadarChart(data) {
             const ctxRadar = document.getElementById('radarChart').getContext('2d');
-            
+            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-cyan').trim() || '#00f0ff';
+
             const normalizedData = [
                 Math.min(100, (data['Age'] / 80) * 100),
                 Math.min(100, (data['Tenure'] / 60) * 100),
@@ -559,9 +671,7 @@ HTML_TEMPLATE = """
                 Math.min(100, (data['Total Spend'] / 2000) * 100)
             ];
 
-            if (radarChartInstance) {
-                radarChartInstance.destroy();
-            }
+            if (radarChartInstance) radarChartInstance.destroy();
 
             radarChartInstance = new Chart(ctxRadar, {
                 type: 'radar',
@@ -570,13 +680,10 @@ HTML_TEMPLATE = """
                     datasets: [{
                         label: 'Feature Intensity',
                         data: normalizedData,
-                        backgroundColor: 'rgba(0, 240, 255, 0.25)',
-                        borderColor: '#00f0ff',
+                        backgroundColor: 'rgba(0, 240, 255, 0.2)',
+                        borderColor: primaryColor,
                         borderWidth: 2,
-                        pointBackgroundColor: '#ff007f',
-                        pointBorderColor: '#ffffff',
-                        pointHoverBackgroundColor: '#ffffff',
-                        pointHoverBorderColor: '#ff007f'
+                        pointBackgroundColor: primaryColor
                     }]
                 },
                 options: {
@@ -584,46 +691,31 @@ HTML_TEMPLATE = """
                     maintainAspectRatio: false,
                     scales: {
                         r: {
-                            angleLines: { color: 'rgba(168, 85, 247, 0.3)' },
-                            grid: { color: 'rgba(168, 85, 247, 0.2)' },
-                            pointLabels: {
-                                color: '#a1a1aa',
-                                font: { size: 11, family: 'Space Grotesk' }
-                            },
+                            angleLines: { color: 'rgba(255, 255, 255, 0.15)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.15)' },
                             ticks: { display: false },
                             suggestedMin: 0,
                             suggestedMax: 100
                         }
                     },
-                    plugins: {
-                        legend: { display: false }
-                    }
+                    plugins: { legend: { display: false } }
                 }
             });
         }
 
-        // AJAX Prediction Logic
+        // AJAX Form Processing
         document.getElementById('prediction-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Hyper-speed particles animation trigger
-            speedMultiplier = 4;
-            setTimeout(() => { speedMultiplier = 1; }, 1500);
-
             const formData = new FormData(this);
             const data = {};
-            
-            formData.forEach((value, key) => {
-                data[key] = parseFloat(value);
-            });
+            formData.forEach((value, key) => data[key] = parseFloat(value));
 
             const resultBox = document.getElementById('result-box');
             const resultText = document.getElementById('result-text');
 
             resultBox.style.display = 'block';
-            resultText.style.color = '#ffffff';
-            resultText.className = 'result-value';
-            resultText.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing Model...';
+            resultText.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing...';
 
             try {
                 const response = await fetch('/predict', {
@@ -637,15 +729,12 @@ HTML_TEMPLATE = """
                     resultText.className = 'result-value ' + (res.prediction === 1 ? 'result-negative' : 'result-positive');
                     resultText.innerHTML = res.label;
 
-                    // Render Animated Radar Chart
                     renderRadarChart(data);
 
-                    // Compute Percentage Metrics
                     const riskPct = res.prediction === 1 ? 88 : 12;
                     const usagePct = Math.round(Math.min(100, (data['Usage Frequency'] / 30) * 100));
                     const spendPct = Math.round(Math.min(100, (data['Total Spend'] / 2000) * 100));
 
-                    // Animate Bar Widths & Text Counters
                     setTimeout(() => {
                         document.getElementById('riskBar').style.width = riskPct + '%';
                         document.getElementById('engagementBar').style.width = usagePct + '%';
@@ -655,15 +744,10 @@ HTML_TEMPLATE = """
                         document.getElementById('usagePctText').innerText = usagePct + '%';
                         document.getElementById('spendPctText').innerText = spendPct + '%';
                     }, 100);
-
                 } else {
-                    resultText.className = 'result-value';
-                    resultText.style.color = '#ff007f';
                     resultText.innerText = 'Error: ' + res.message;
                 }
             } catch (err) {
-                resultText.className = 'result-value';
-                resultText.style.color = '#ff007f';
                 resultText.innerText = 'Execution Failed. Check server logs.';
             }
         });
