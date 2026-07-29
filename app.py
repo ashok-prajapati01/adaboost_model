@@ -5,14 +5,16 @@ from flask import Flask, render_template_string, request, jsonify
 
 app = Flask(__name__)
 
-# Load the trained AdaBoost model
+# Load the trained AdaBoost model safely
 MODEL_PATH = "adaboost_model.pkl"
 model = None
 
 if os.path.exists(MODEL_PATH):
-    model = joblib.load(MODEL_PATH)
+    try:
+        model = joblib.load(MODEL_PATH)
+    except Exception as e:
+        print(f"Error loading model: {e}")
 
-# HTML/CSS/JS Template with Dynamic Canvas Background & Premium UI Design
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="en">
@@ -26,16 +28,14 @@ HTML_TEMPLATE = """
     
     <style>
         :root {
-            --bg-dark: #0a0e17;
-            --card-bg: rgba(16, 24, 40, 0.75);
-            --card-border: rgba(255, 255, 255, 0.08);
+            --card-bg: rgba(15, 23, 42, 0.75);
+            --card-border: rgba(255, 255, 255, 0.12);
             --accent-cyan: #00f2fe;
-            --accent-blue: #4facfe;
-            --accent-purple: #7f00ff;
+            --accent-purple: #9d4edd;
             --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --input-bg: rgba(255, 255, 255, 0.03);
-            --input-border: rgba(255, 255, 255, 0.12);
+            --text-muted: #cbd5e1;
+            --input-bg: rgba(255, 255, 255, 0.05);
+            --input-border: rgba(255, 255, 255, 0.18);
             --success-color: #10b981;
             --danger-color: #f43f5e;
         }
@@ -47,9 +47,8 @@ HTML_TEMPLATE = """
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
+        /* Animated Multi-Color Gradient Background */
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -57,9 +56,19 @@ HTML_TEMPLATE = """
             overflow-x: hidden;
             position: relative;
             padding: 40px 20px;
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #2e1065, #0284c7, #0f172a);
+            background-size: 400% 400%;
+            animation: animatedGradient 14s ease infinite;
+            color: var(--text-main);
         }
 
-        /* Animated Interactive Canvas Background */
+        @keyframes animatedGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Particle Overlay */
         #bg-canvas {
             position: fixed;
             top: 0;
@@ -74,15 +83,15 @@ HTML_TEMPLATE = """
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 1000px;
+            max-width: 980px;
             background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border: 1px solid var(--card-border);
             border-radius: 24px;
             padding: 45px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6),
-                        0 0 40px rgba(0, 242, 254, 0.05);
+                        0 0 35px rgba(0, 242, 254, 0.15);
         }
 
         .header {
@@ -93,8 +102,8 @@ HTML_TEMPLATE = """
         .header .badge {
             display: inline-block;
             padding: 6px 16px;
-            background: rgba(0, 242, 254, 0.1);
-            border: 1px solid rgba(0, 242, 254, 0.25);
+            background: rgba(0, 242, 254, 0.12);
+            border: 1px solid rgba(0, 242, 254, 0.3);
             border-radius: 30px;
             color: var(--accent-cyan);
             font-size: 0.75rem;
@@ -120,7 +129,7 @@ HTML_TEMPLATE = """
 
         .grid-form {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
             gap: 20px;
         }
 
@@ -156,19 +165,19 @@ HTML_TEMPLATE = """
 
         .form-control:focus {
             border-color: var(--accent-cyan);
-            background: rgba(255, 255, 255, 0.06);
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
         }
 
         select.form-control option {
-            background-color: #101828;
+            background-color: #0f172a;
             color: #ffffff;
         }
 
         .submit-btn {
             grid-column: 1 / -1;
             margin-top: 15px;
-            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+            background: linear-gradient(135deg, #00c6ff 0%, #0072ff 50%, var(--accent-purple) 100%);
             color: white;
             border: none;
             border-radius: 12px;
@@ -181,12 +190,12 @@ HTML_TEMPLATE = """
             align-items: center;
             justify-content: center;
             gap: 10px;
-            box-shadow: 0 10px 25px -5px rgba(79, 172, 254, 0.4);
+            box-shadow: 0 10px 25px -5px rgba(0, 198, 255, 0.4);
         }
 
         .submit-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 15px 30px -5px rgba(79, 172, 254, 0.6);
+            box-shadow: 0 15px 30px -5px rgba(0, 198, 255, 0.6);
             filter: brightness(1.1);
         }
 
@@ -194,16 +203,15 @@ HTML_TEMPLATE = """
             transform: translateY(0);
         }
 
-        /* Result Section Styling */
         .result-card {
             margin-top: 30px;
             padding: 24px;
             border-radius: 16px;
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--card-border);
             text-align: center;
             display: none;
-            animation: fadeIn 0.5s ease-in-out forwards;
+            animation: fadeIn 0.4s ease-in-out forwards;
         }
 
         .result-title {
@@ -215,18 +223,18 @@ HTML_TEMPLATE = """
         }
 
         .result-value {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 700;
         }
 
         .result-positive {
             color: var(--success-color);
-            text-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
         }
 
         .result-negative {
             color: var(--danger-color);
-            text-shadow: 0 0 20px rgba(244, 63, 94, 0.3);
+            text-shadow: 0 0 20px rgba(244, 63, 94, 0.4);
         }
 
         @keyframes fadeIn {
@@ -242,14 +250,13 @@ HTML_TEMPLATE = """
 </head>
 <body>
 
-    <!-- Particle Canvas Background -->
     <canvas id="bg-canvas"></canvas>
 
     <div class="container">
         <div class="header">
-            <span class="badge"><i class="fa-solid fa-chart-line"></i> Enterprise Analytics</span>
-            <h1>AdaBoost Intelligence Portal</h1>
-            <p>Input dynamic metrics to evaluate predictive customer intelligence models</p>
+            <span class="badge"><i class="fa-solid fa-chart-line"></i> Analytics Intelligence Portal</span>
+            <h1>AdaBoost Prediction System</h1>
+            <p>Input target metrics to obtain real-time machine learning predictions</p>
         </div>
 
         <form id="prediction-form" class="grid-form">
@@ -313,24 +320,23 @@ HTML_TEMPLATE = """
             </div>
 
             <div class="form-group">
-                <label><i class="fa-solid fa-hand-pointer"></i> Last Interaction (Days ago)</label>
+                <label><i class="fa-solid fa-hand-pointer"></i> Last Interaction (Days)</label>
                 <input type="number" name="Last Interaction" class="form-control" placeholder="e.g. 14" required min="0">
             </div>
 
             <button type="submit" class="submit-btn">
-                <i class="fa-solid fa-microchip"></i> Execute Model Prediction
+                <i class="fa-solid fa-microchip"></i> Run Model Prediction
             </button>
         </form>
 
         <div id="result-box" class="result-card">
-            <div class="result-title">Model Evaluation Output</div>
+            <div class="result-title">Evaluation Result</div>
             <div id="result-text" class="result-value">---</div>
         </div>
     </div>
 
-    <!-- Canvas Animation & Ajax Interaction -->
     <script>
-        // Interactive Canvas Animation Setup
+        // Floating Light Particles Canvas Animation
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         
@@ -342,15 +348,15 @@ HTML_TEMPLATE = """
         resizeCanvas();
 
         const particles = [];
-        const particleCount = 45;
+        const particleCount = 40;
 
         class Particle {
             constructor() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 1;
-                this.speedX = (Math.random() - 0.5) * 0.8;
-                this.speedY = (Math.random() - 0.5) * 0.8;
+                this.size = Math.random() * 2.5 + 1;
+                this.speedX = (Math.random() - 0.5) * 0.6;
+                this.speedY = (Math.random() - 0.5) * 0.6;
                 this.opacity = Math.random() * 0.5 + 0.2;
             }
 
@@ -385,10 +391,10 @@ HTML_TEMPLATE = """
                     const dy = particles[i].y - particles[j].y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
 
-                    if (distance < 120) {
+                    if (distance < 110) {
                         ctx.beginPath();
-                        ctx.strokeStyle = `rgba(79, 172, 254, ${0.15 - distance / 800})`;
-                        ctx.lineWidth = 0.8;
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${0.12 - distance / 1000})`;
+                        ctx.lineWidth = 0.6;
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
                         ctx.stroke();
@@ -399,13 +405,16 @@ HTML_TEMPLATE = """
         }
         animate();
 
-        // AJAX Form Submission Handling
+        // AJAX Prediction Logic
         document.getElementById('prediction-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const formData = new FormData(this);
             const data = {};
-            formData.forEach((value, key) => data[key] = parseFloat(value));
+            
+            formData.forEach((value, key) => {
+                data[key] = parseFloat(value);
+            });
 
             const resultBox = document.getElementById('result-box');
             const resultText = document.getElementById('result-text');
@@ -448,24 +457,33 @@ def home():
 @app.route('/predict', methods=['POST'])
 def predict():
     if model is None:
-        return jsonify({'status': 'error', 'message': 'Model file not found or loaded.'}), 500
+        return jsonify({
+            'status': 'error', 
+            'message': 'Model file (adaboost_model.pkl) was not found or failed to load on the server.'
+        }), 500
 
     try:
-        data = request.get_json()
+        data = request.get_json(force=True)
         
-        # Extract features in exact feature order expected by the AdaBoost model
         feature_order = [
             'Age', 'Gender', 'Tenure', 'Usage Frequency', 'Support Calls',
             'Payment Delay', 'Subscription Type', 'Contract Length', 
             'Total Spend', 'Last Interaction'
         ]
         
-        features = [data[feat] for feat in feature_order]
-        input_array = np.array([features])
+        features = []
+        for feat in feature_order:
+            val = data.get(feat)
+            if val is None:
+                return jsonify({
+                    'status': 'error', 
+                    'message': f'Missing value for feature: "{feat}"'
+                }), 400
+            features.append(float(val))
 
+        input_array = np.array([features])
         prediction = int(model.predict(input_array)[0])
         
-        # Customizable result dynamic labels
         label = "High Risk / Churn Predicted" if prediction == 1 else "Low Risk / Active Customer"
 
         return jsonify({
@@ -475,7 +493,10 @@ def predict():
         })
 
     except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 400
+        return jsonify({
+            'status': 'error', 
+            'message': f'Prediction Error: {str(e)}'
+        }), 400
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
